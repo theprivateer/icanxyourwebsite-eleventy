@@ -1,0 +1,8 @@
+/*
+  Content-Security-Policy: frame-ancestors 'none';
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/feed.xml
+  Content-Type: application/rss+xml; charset=utf-8

@@ -1,0 +1,18 @@
+---
+layout: base.njk
+title: Blog
+permalink: /blog/index.html
+---
+<section>
+  <h1 class="text-6xl font-bold">Blog</h1>
+  <ul class="mt-8 flex flex-col gap-8">
+    {% for post in collections.posts %}
+      <li>
+        <h2 class="text-2xl font-bold">
+          <a href="{{ post.url }}" class="text-blue-600 hover:text-blue-500 underline">{{ post.data.title }}</a>
+        </h2>
+        <p class="text-xl text-zinc-500">{{ post.data.date | readableDate }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+</section>

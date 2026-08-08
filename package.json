@@ -1,0 +1,17 @@
+{
+  "name": "icanbuildyourwebsite-static",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/clean-output.js && ELEVENTY_ENV=production eleventy",
+    "dev": "node scripts/clean-output.js && ELEVENTY_ENV=development eleventy --serve",
+    "test": "npm run build -- --quiet && node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "3.1.6"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

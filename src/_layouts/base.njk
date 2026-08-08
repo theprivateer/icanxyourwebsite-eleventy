@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="{{ site.language }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ site.name }} | {{ title | escape }}</title>
+    <meta name="description" content="{{ description or site.description }}">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="{{ site.name }} blog">
+    {% if environment == "production" %}
+    <script src="https://cdn.usefathom.com/script.js" data-site="KJQJWDCE" defer></script>
+    {% endif %}
+  </head>
+  <body class="font-sans leading-normal text-zinc-800 dark:text-zinc-400">
+    <header class="mx-auto max-w-4xl flex justify-between text-xl py-8 items-center">
+      <a href="/" class="font-semibold">I Can Build<br>Your Website</a>
+
+      <ul class="flex gap-6 items-center">
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="mailto:phil@truenorthlabs.com.au" class="rounded-md bg-blue-600 inline-block no-underline px-3 py-2 text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Contact</a></li>
+      </ul>
+    </header>
+
+    <main class="mx-auto max-w-4xl">
+      {{ content | safe }}
+    </main>
+
+    <footer class="mx-auto px-2 max-w-4xl flex justify-between text-xl py-8">
+      <div>
+        &copy; <a href="https://truenorthlabs.com.au" class="underline">True North Labs</a> 2025-2026
+      </div>
+
+      <div>
+        <a href="https://www.linkedin.com/company/i-can-build-your-website/" class="underline">LinkedIn</a>
+      </div>
+    </footer>
+  </body>
+</html>
