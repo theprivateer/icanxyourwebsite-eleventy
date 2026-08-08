@@ -7,7 +7,6 @@ export default {
   language: "en-AU",
   description: "Website repairs, performance improvements, and practical support for businesses.",
   linkedinUrl: "https://www.linkedin.com/company/i-can-fix-your-website/",
-  fathomSiteId: "XWAVRVZQ",
   author: {
     name: "Phil Stephens",
     email: "phil@truenorthlabs.com.au",
