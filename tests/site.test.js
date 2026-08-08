@@ -2,8 +2,11 @@ import assert from "node:assert/strict";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
+import site from "../src/_data/site.js";
 
 const outputDirectory = path.resolve("_site");
+const pagesDirectory = path.resolve("src/content/pages");
+const postsDirectory = path.resolve("src/content/posts");
 
 async function filesBelow(directory) {
   const entries = await readdir(directory);
@@ -21,41 +24,58 @@ async function filesBelow(directory) {
   return files;
 }
 
+async function markdownFiles(directory) {
+  return (await readdir(directory)).filter((file) => file.endsWith(".md")).sort();
+}
+
+function frontmatterValue(markdown, key) {
+  const match = markdown.match(new RegExp(`^${key}:\\s*(.+)$`, "m"));
+  if (!match) {
+    return undefined;
+  }
+
+  const value = match[1].trim();
+  return value.startsWith('"') ? JSON.parse(value) : value;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 test("build creates every migrated route", async () => {
-  const files = await filesBelow(outputDirectory);
-  const htmlFiles = files.filter((file) => file.endsWith(".html"));
+  const outputFiles = await filesBelow(outputDirectory);
+  const htmlFiles = outputFiles.filter((file) => file.endsWith(".html"));
+  const pages = await markdownFiles(pagesDirectory);
+  const posts = await markdownFiles(postsDirectory);
   const postPages = htmlFiles.filter((file) => file.includes(`${path.sep}blog${path.sep}`));
 
-  assert.equal(htmlFiles.length, 29, "home, six detail pages, blog index, 20 posts, and 404");
-  assert.equal(postPages.length, 21, "20 posts plus the blog index");
+  assert.equal(htmlFiles.length, pages.length + posts.length + 2, "content routes plus blog and 404");
+  assert.equal(postPages.length, posts.length + 1, "posts plus the blog index");
 
-  for (const relativePath of [
-    "index.html",
-    "404.html",
-    "blog/index.html",
-    "accessibility-is-part-of-quality-not-an-extra/index.html",
-    "clean-design-strong-seo-and-solid-performance/index.html",
-    "easy-updates-with-statamic/index.html",
-    "fair-pricing-honest-advice/index.html",
-    "websites-for-growing-businesses-of-all-kinds/index.html",
-    "you-own-your-content-always/index.html",
-    "feed.xml",
-    "sitemap.xml",
-    "_headers",
-  ]) {
+  for (const file of pages) {
+    const slug = path.basename(file, ".md");
+    const target = slug === "home" ? "index.html" : `${slug}/index.html`;
+    assert.ok((await stat(path.join(outputDirectory, target))).isFile(), target);
+  }
+
+  for (const relativePath of ["404.html", "blog/index.html", "feed.xml", "robots.txt", "sitemap.xml", "_headers"]) {
     assert.ok((await stat(path.join(outputDirectory, relativePath))).isFile(), relativePath);
   }
 });
 
 test("post filenames contain only their slug and dates live in frontmatter", async () => {
-  const files = (await readdir(path.resolve("src/content/posts"))).filter((file) => file.endsWith(".md"));
+  const files = await markdownFiles(postsDirectory);
 
-  assert.equal(files.length, 20);
   assert.equal(files.some((file) => /^\d{4}-\d{2}-\d{2}/.test(file)), false);
 
   for (const file of files) {
-    const markdown = await readFile(path.resolve("src/content/posts", file), "utf8");
-    assert.match(markdown, /^date: \d{4}-\d{2}-\d{2}T14:00:00Z$/m, file);
+    const markdown = await readFile(path.join(postsDirectory, file), "utf8");
+    assert.match(markdown, /^date: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00Z$/m, file);
   }
 });
 
@@ -70,21 +90,38 @@ test("content omits Statamic-only frontmatter", async () => {
 });
 
 test("blog archive is sorted newest first", async () => {
-  const blog = await readFile(path.join(outputDirectory, "blog/index.html"), "utf8");
+  const files = await markdownFiles(postsDirectory);
+  if (files.length === 0) {
+    return;
+  }
 
-  assert.ok(blog.indexOf("The moment most businesses realise their website matters") < blog.indexOf("What &quot;owning your website&quot; really means"));
-  assert.match(blog, /April 19th, 2026/);
+  const posts = await Promise.all(files.map(async (file) => {
+    const markdown = await readFile(path.join(postsDirectory, file), "utf8");
+    return {
+      date: frontmatterValue(markdown, "date"),
+      title: frontmatterValue(markdown, "title"),
+    };
+  }));
+  posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const blog = await readFile(path.join(outputDirectory, "blog/index.html"), "utf8");
+  assert.ok(blog.indexOf(escapeHtml(posts[0].title)) < blog.indexOf(escapeHtml(posts.at(-1).title)));
 });
 
-test("shared presentation and calls to action are retained", async () => {
-  const home = await readFile(path.join(outputDirectory, "index.html"), "utf8");
-  const post = await readFile(path.join(outputDirectory, "blog/how-a-hacked-website-affects-your-business-reputation/index.html"), "utf8");
+test("site configuration drives shared presentation and metadata", async () => {
+  const blog = await readFile(path.join(outputDirectory, "blog/index.html"), "utf8");
+  const robots = await readFile(path.join(outputDirectory, "robots.txt"), "utf8");
 
-  assert.match(home, /Web design and development that works for your business/);
-  assert.match(home, /class="prose lg:prose-xl max-w-none p-8 bg-blue-200 rounded-2xl"/);
-  assert.match(home, /Get in touch and let(?:'|&#39;)s discuss what you need/);
-  assert.match(post, /Let(?:'|&#39;)s secure your site/);
-  assert.match(post, /data-site="KJQJWDCE"/);
+  assert.match(blog, new RegExp(`<title>${escapeHtml(site.name)} \\| Blog</title>`));
+  assert.match(blog, new RegExp(`${escapeHtml(site.headerLineOne)}<br>${escapeHtml(site.headerLineTwo)}`));
+  assert.match(blog, new RegExp(`href="${escapeHtml(site.linkedinUrl)}"`));
+  assert.match(robots, new RegExp(`Sitemap: ${site.url.replaceAll(".", "\\.")}\\/sitemap\\.xml`));
+
+  if (site.fathomSiteId) {
+    assert.match(blog, new RegExp(`data-site="${site.fathomSiteId}"`));
+  } else {
+    assert.doesNotMatch(blog, /cdn\.usefathom\.com/);
+  }
 });
 
 test("rendered pages contain no unresolved template syntax", async () => {
@@ -99,6 +136,8 @@ test("rendered pages contain no unresolved template syntax", async () => {
 
 test("internal links resolve to generated files", async () => {
   const files = (await filesBelow(outputDirectory)).filter((file) => file.endsWith(".html"));
+  const pages = await markdownFiles(pagesDirectory);
+  const hasHomePage = pages.includes("home.md");
   const missing = [];
 
   for (const file of files) {
@@ -107,6 +146,10 @@ test("internal links resolve to generated files", async () => {
 
     for (const link of links) {
       const pathname = link.split(/[?#]/, 1)[0];
+      if (pathname === "/" && !hasHomePage) {
+        continue;
+      }
+
       const relativeTarget = pathname === "/"
         ? "index.html"
         : path.extname(pathname)
@@ -122,4 +165,13 @@ test("internal links resolve to generated files", async () => {
   }
 
   assert.deepEqual([...new Set(missing)].sort(), []);
+});
+
+test("Cloudflare security headers are included", async () => {
+  const headers = await readFile(path.join(outputDirectory, "_headers"), "utf8");
+
+  assert.match(headers, /^\/\*$/m);
+  assert.match(headers, /Content-Security-Policy: frame-ancestors 'none';/);
+  assert.match(headers, /Strict-Transport-Security: max-age=63072000; includeSubDomains/);
+  assert.match(headers, /X-Frame-Options: DENY/);
 });

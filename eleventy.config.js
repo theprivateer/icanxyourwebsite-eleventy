@@ -1,5 +1,3 @@
-const SITE_URL = "https://icanbuildyour.website";
-
 function byDateDescending(a, b) {
   return new Date(b.data.date) - new Date(a.data.date);
 }
@@ -62,7 +60,6 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.ico": "favicon.ico" });
-  eleventyConfig.addPassthroughCopy({ "src/robots.txt": "robots.txt" });
   eleventyConfig.addPassthroughCopy({ "src/_headers": "_headers" });
 
   eleventyConfig.addWatchTarget("src/assets/");
@@ -86,19 +83,8 @@ export default function (eleventyConfig) {
   });
   eleventyConfig.addFilter("rfc3339Date", (value) => new Date(value).toISOString());
   eleventyConfig.addFilter("rfc822Date", (value) => new Date(value).toUTCString());
-  eleventyConfig.addFilter("absoluteUrl", (url) => new URL(url, SITE_URL).toString());
+  eleventyConfig.addFilter("absoluteUrl", (url, baseUrl) => new URL(url, baseUrl).toString());
   eleventyConfig.addFilter("xmlEscape", xmlEscape);
-
-  eleventyConfig.addGlobalData("site", {
-    name: "I Can Build Your Website",
-    url: SITE_URL,
-    language: "en-AU",
-    description: "Web design and development for small to medium sized businesses.",
-    author: {
-      name: "Phil Stephens",
-      email: "phil@truenorthlabs.com.au",
-    },
-  });
   eleventyConfig.addGlobalData("environment", process.env.ELEVENTY_ENV ?? "production");
 
   return {
