@@ -2,11 +2,11 @@
 
 This repository contains the shared Eleventy implementation for three related static websites:
 
-| Branch | Website | Statamic source |
-| --- | --- | --- |
-| `build` | [icanbuildyour.website](https://icanbuildyour.website) | `../../ICanXYourWebsite/icanbuildyour.website` |
-| `fix` | [icanfixyour.website](https://icanfixyour.website) | `../../ICanXYourWebsite/icanfixyour.website` |
-| `manage` | [icanmanageyour.website](https://icanmanageyour.website) | `../../ICanXYourWebsite/icanmanageyour.website` |
+| Branch | Website |
+| --- | --- |
+| `build` | [icanbuildyour.website](https://icanbuildyour.website) |
+| `fix` | [icanfixyour.website](https://icanfixyour.website) |
+| `manage` | [icanmanageyour.website](https://icanmanageyour.website) |
 
 The sites share their layouts, build configuration, tests, routes, feeds, and Cloudflare Pages support. Each deployment branch owns its identity, compiled stylesheet, pages, and blog posts.
 
