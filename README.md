@@ -47,7 +47,6 @@ Branch-specific identity is defined in `src/_data/site.js`:
 - canonical URL
 - meta description
 - LinkedIn URL
-- Fathom site ID
 
 The contact email, True North Labs footer, copyright years, templates, content routes, RSS feed, sitemap, date formatting, and Cloudflare headers are shared.
 

@@ -116,12 +116,7 @@ test("site configuration drives shared presentation and metadata", async () => {
   assert.match(blog, new RegExp(`${escapeHtml(site.headerLineOne)}<br>${escapeHtml(site.headerLineTwo)}`));
   assert.match(blog, new RegExp(`href="${escapeHtml(site.linkedinUrl)}"`));
   assert.match(robots, new RegExp(`Sitemap: ${site.url.replaceAll(".", "\\.")}\\/sitemap\\.xml`));
-
-  if (site.fathomSiteId) {
-    assert.match(blog, new RegExp(`data-site="${site.fathomSiteId}"`));
-  } else {
-    assert.doesNotMatch(blog, /cdn\.usefathom\.com/);
-  }
+  assert.doesNotMatch(blog, /<script\b/);
 });
 
 test("rendered pages contain no unresolved template syntax", async () => {
