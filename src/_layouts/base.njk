@@ -8,9 +8,6 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="stylesheet" href="/assets/site.css">
     <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="{{ site.name }} blog">
-    {% if environment == "production" and site.fathomSiteId %}
-    <script src="https://cdn.usefathom.com/script.js" data-site="{{ site.fathomSiteId }}" defer></script>
-    {% endif %}
   </head>
   <body class="font-sans leading-normal text-zinc-800 dark:text-zinc-400">
     <header class="mx-auto max-w-4xl flex justify-between text-xl py-8 items-center">
