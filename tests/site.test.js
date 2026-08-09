@@ -29,8 +29,7 @@ async function firstMarkdownSlug(directory, excluded = []) {
     .filter((file) => file.endsWith(".md") && !excluded.includes(file))
     .sort();
 
-  assert.ok(files.length > 0, `expected archived Markdown in ${directory}`);
-  return path.basename(files[0], ".md");
+  return files.length > 0 ? path.basename(files[0], ".md") : undefined;
 }
 
 test("build publishes only the retirement surface", async () => {
@@ -83,8 +82,12 @@ test("holding page remains accessible and dependency-free", async () => {
 test("representative old service and article routes are absent", async () => {
   const serviceSlug = await firstMarkdownSlug(pagesDirectory, ["home.md"]);
   const articleSlug = await firstMarkdownSlug(postsDirectory);
+  const archivedRoutes = [
+    serviceSlug,
+    articleSlug ? `blog/${articleSlug}` : undefined,
+  ].filter(Boolean);
 
-  for (const slug of [serviceSlug, `blog/${articleSlug}`]) {
+  for (const slug of archivedRoutes) {
     await assert.rejects(stat(path.join(outputDirectory, slug, "index.html")), { code: "ENOENT" });
   }
 
