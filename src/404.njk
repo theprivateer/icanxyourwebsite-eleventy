@@ -1,7 +1,13 @@
 ---
 layout: base.njk
 title: Page not found
+description: The page you requested could not be found.
+noindex: true
 permalink: /404.html
 eleventyExcludeFromCollections: true
 ---
-<p>404 Page not found.</p>
+<section class="prose lg:prose-xl max-w-none py-8 prose-a:text-blue-600 prose-a:hover:text-blue-500">
+  <h1>We could not find that page</h1>
+  <p>The address may be incorrect, or the page may have moved.</p>
+  <p><a href="/">Return to the homepage</a> or browse the <a href="/blog/">blog</a>.</p>
+</section>

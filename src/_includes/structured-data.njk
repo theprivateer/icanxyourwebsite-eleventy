@@ -1,0 +1,40 @@
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": {{ (site.url ~ "/#website") | jsonStringify | safe }},
+      "url": {{ (site.url ~ "/") | jsonStringify | safe }},
+      "name": {{ site.name | jsonStringify | safe }},
+      "description": {{ site.description | jsonStringify | safe }},
+      "inLanguage": {{ site.language | jsonStringify | safe }}
+    },
+    {
+      "@type": {{ ("BlogPosting" if contentType == "post" else "WebPage") | jsonStringify | safe }},
+      "@id": {{ (canonicalUrl ~ "#page") | jsonStringify | safe }},
+      "url": {{ canonicalUrl | jsonStringify | safe }},
+      "name": {{ pageTitle | jsonStringify | safe }},
+      "description": {{ pageDescription | jsonStringify | safe }},
+      "inLanguage": {{ site.language | jsonStringify | safe }},
+      "isPartOf": { "@id": {{ (site.url ~ "/#website") | jsonStringify | safe }} }{% if contentType == "post" %},
+      "headline": {{ pageTitle | jsonStringify | safe }},
+      "author": {
+        "@type": "Person",
+        "name": {{ site.author.name | jsonStringify | safe }}
+      },
+      "datePublished": {{ (date | rfc3339Date) | jsonStringify | safe }},
+      "image": {{ socialImageUrl | jsonStringify | safe }}{% endif %}
+    }{% if breadcrumbItems.length > 1 %},
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {% for item in breadcrumbItems %}{
+          "@type": "ListItem",
+          "position": {{ loop.index }},
+          "name": {{ item.name | jsonStringify | safe }},
+          "item": {{ item.url | jsonStringify | safe }}
+        }{% if not loop.last %},{% endif %}{% endfor %}
+      ]
+    }{% endif %}
+  ]
+}</script>

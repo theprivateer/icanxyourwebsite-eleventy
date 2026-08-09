@@ -1,31 +1,67 @@
+{% set pageTitle = title or site.name %}
+{% set pageDescription = description or (content | metadataDescription(site.description)) %}
+{% set canonicalUrl = page.url | absoluteUrl(site.url) %}
+{% set socialImageUrl = '/assets/social-card.png' | absoluteUrl(site.url) %}
+{% set breadcrumbItems = page.url | breadcrumbItems(pageTitle, contentType, site.url) %}
 <!doctype html>
 <html lang="{{ site.language }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ site.name }} | {{ title | escape }}</title>
-    <meta name="description" content="{{ description or site.description }}">
-    <link rel="icon" href="/favicon.ico" sizes="any">
+    <title>{{ site.name }} | {{ pageTitle | escape }}</title>
+    <meta name="description" content="{{ pageDescription | escape }}">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="color-scheme" content="light">
+    {% if noindex %}
+    <meta name="robots" content="noindex">
+    {% else %}
+    <link rel="canonical" href="{{ canonicalUrl }}">
+    <meta property="og:site_name" content="{{ site.name | escape }}">
+    <meta property="og:title" content="{{ pageTitle | escape }}">
+    <meta property="og:description" content="{{ pageDescription | escape }}">
+    <meta property="og:url" content="{{ canonicalUrl }}">
+    <meta property="og:type" content="{{ 'article' if contentType == 'post' else 'website' }}">
+    <meta property="og:image" content="{{ socialImageUrl }}">
+    <meta property="og:image:alt" content="{{ site.name | escape }}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    {% include "structured-data.njk" %}
+    {% endif %}
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/assets/favicon-48.png" type="image/png" sizes="48x48">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="preload" href="/assets/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/site-enhancements.css">
     <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="{{ site.name }} blog">
   </head>
-  <body class="font-sans leading-normal text-zinc-800 dark:text-zinc-400">
-    <header class="mx-auto max-w-4xl flex justify-between text-xl py-8 items-center">
-      <a href="/" class="font-semibold">{{ site.headerLineOne }}<br>{{ site.headerLineTwo }}</a>
+  <body class="font-sans leading-normal text-zinc-800">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 
-      <ul class="flex gap-6 items-center">
-        <li><a href="/blog">Blog</a></li>
-        <li><a href="mailto:phil@truenorthlabs.com.au" class="rounded-md bg-blue-600 inline-block no-underline px-3 py-2 text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Contact</a></li>
-      </ul>
+    <header class="mx-auto max-w-4xl flex justify-between text-xl py-8 items-center">
+      <a href="/" class="font-semibold" aria-label="{{ site.name }} homepage">{{ site.headerLineOne }}<br>{{ site.headerLineTwo }}</a>
+
+      <nav aria-label="Primary">
+        <ul class="flex gap-6 items-center">
+          <li><a href="/blog"{% if page.url | startsWith('/blog') %} aria-current="page"{% endif %}>Blog</a></li>
+          <li><a href="mailto:{{ site.author.email }}" class="rounded-md bg-blue-600 inline-block no-underline px-3 py-2 text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Contact</a></li>
+        </ul>
+      </nav>
     </header>
 
-    <main class="mx-auto max-w-4xl">
+    <main id="main-content" class="mx-auto max-w-4xl" tabindex="-1">
+      {% include "breadcrumbs.njk" %}
       {{ content | safe }}
     </main>
 
     <footer class="mx-auto px-2 max-w-4xl flex justify-between text-xl py-8">
       <div>
-        &copy; <a href="https://truenorthlabs.com.au" class="underline">True North Labs</a> 2025-2026
+        &copy; <a href="https://truenorthlabs.com.au" class="underline">True North Labs</a> 2025-{{ build.year }}
+        <span aria-hidden="true">&middot;</span>
+        <a href="/privacy/" class="underline">Privacy</a>
       </div>
 
       <div>
