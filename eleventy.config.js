@@ -20,6 +20,47 @@ function xmlEscape(value = "") {
     .replaceAll("'", "&apos;");
 }
 
+function stripHtml(value = "") {
+  return String(value)
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replaceAll("&nbsp;", " ")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function metadataDescription(value = "", fallback = "") {
+  const text = stripHtml(value) || fallback;
+
+  if (text.length <= 160) {
+    return text;
+  }
+
+  const shortened = text.slice(0, 157).replace(/\s+\S*$/, "").trimEnd();
+  return `${shortened}…`;
+}
+
+function breadcrumbItems(url, title, contentType, siteUrl) {
+  if (!url || url === "/" || url === "/404.html") {
+    return [];
+  }
+
+  const items = [{ name: "Home", path: "/", url: new URL("/", siteUrl).toString() }];
+
+  if (contentType === "post") {
+    items.push({ name: "Blog", path: "/blog/", url: new URL("/blog/", siteUrl).toString() });
+  }
+
+  items.push({ name: title, path: url, url: new URL(url, siteUrl).toString() });
+  return items;
+}
+
 function ordinalSuffix(day) {
   if (day % 100 >= 11 && day % 100 <= 13) {
     return "th";
@@ -34,6 +75,13 @@ export default function (eleventyConfig) {
   eleventyConfig.configureErrorReporting({ allowMissingExtensions: true });
   eleventyConfig.amendLibrary("md", (markdown) => {
     markdown.set({ linkify: true });
+    const renderImage = markdown.renderer.rules.image;
+    markdown.renderer.rules.image = (tokens, index, options, environment, renderer) => {
+      tokens[index].attrSet("loading", "lazy");
+      tokens[index].attrSet("decoding", "async");
+
+      return renderImage(tokens, index, options, environment, renderer);
+    };
     markdownLibrary = markdown;
     return markdown;
   });
@@ -41,7 +89,11 @@ export default function (eleventyConfig) {
   eleventyConfig.addPairedShortcode("section", (content, type, title) => {
     const heading = type === "hero" ? "h1" : "h2";
     const headingHtml = markdownLibrary.renderInline(title);
-    const bodyHtml = markdownLibrary.render(content.trim());
+    const accessibleTitle = escapeHtml(stripHtml(headingHtml));
+    const bodyHtml = markdownLibrary.render(content.trim()).replace(
+      /<a href="([^"]+)">Read more<\/a>/gi,
+      `<a href="$1" aria-label="Read more about ${accessibleTitle}">Read more</a>`,
+    );
 
     return `<section class="prose lg:prose-xl max-w-none py-8 prose-a:text-blue-600 prose-a:hover:text-blue-500">
   <${heading}>${headingHtml}</${heading}>
@@ -67,6 +119,9 @@ export default function (eleventyConfig) {
   eleventyConfig.addCollection("posts", (collectionApi) =>
     collectionApi.getFilteredByGlob("src/content/posts/*.md").sort(byDateDescending),
   );
+  eleventyConfig.addCollection("pages", (collectionApi) =>
+    collectionApi.getFilteredByGlob("src/content/pages/*.md"),
+  );
 
   eleventyConfig.addFilter("readableDate", (value) => {
     const date = new Date(value);
@@ -83,7 +138,16 @@ export default function (eleventyConfig) {
   });
   eleventyConfig.addFilter("rfc3339Date", (value) => new Date(value).toISOString());
   eleventyConfig.addFilter("rfc822Date", (value) => new Date(value).toUTCString());
+  eleventyConfig.addFilter("oneYearFrom", (value) => {
+    const date = new Date(value);
+    date.setUTCFullYear(date.getUTCFullYear() + 1);
+    return date.toISOString();
+  });
   eleventyConfig.addFilter("absoluteUrl", (url, baseUrl) => new URL(url, baseUrl).toString());
+  eleventyConfig.addFilter("startsWith", (value, prefix) => String(value).startsWith(prefix));
+  eleventyConfig.addFilter("metadataDescription", metadataDescription);
+  eleventyConfig.addFilter("breadcrumbItems", breadcrumbItems);
+  eleventyConfig.addFilter("jsonStringify", (value) => JSON.stringify(value, null, 2).replaceAll("<", "\\u003c"));
   eleventyConfig.addFilter("xmlEscape", xmlEscape);
   eleventyConfig.addGlobalData("environment", process.env.ELEVENTY_ENV ?? "production");
 
