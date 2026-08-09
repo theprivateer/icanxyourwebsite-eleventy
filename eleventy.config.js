@@ -1,155 +1,27 @@
-function byDateDescending(a, b) {
-  return new Date(b.data.date) - new Date(a.data.date);
-}
-
-function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function xmlEscape(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
-
-function stripHtml(value = "") {
-  return String(value)
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replaceAll("&nbsp;", " ")
-    .replaceAll("&amp;", "&")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#39;", "'")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function metadataDescription(value = "", fallback = "") {
-  const text = stripHtml(value) || fallback;
-
-  if (text.length <= 160) {
-    return text;
-  }
-
-  const shortened = text.slice(0, 157).replace(/\s+\S*$/, "").trimEnd();
-  return `${shortened}…`;
-}
-
-function breadcrumbItems(url, title, contentType, siteUrl) {
-  if (!url || url === "/" || url === "/404.html") {
-    return [];
-  }
-
-  const items = [{ name: "Home", path: "/", url: new URL("/", siteUrl).toString() }];
-
-  if (contentType === "post") {
-    items.push({ name: "Blog", path: "/blog/", url: new URL("/blog/", siteUrl).toString() });
-  }
-
-  items.push({ name: title, path: url, url: new URL(url, siteUrl).toString() });
-  return items;
-}
-
-function ordinalSuffix(day) {
-  if (day % 100 >= 11 && day % 100 <= 13) {
-    return "th";
-  }
-
-  return { 1: "st", 2: "nd", 3: "rd" }[day % 10] ?? "th";
-}
+const archivedTemplates = [
+  "src/blog.njk",
+  "src/feed.njk",
+  "src/llms.njk",
+  "src/manifest.njk",
+  "src/privacy.njk",
+  "src/security.njk",
+  "src/sitemap.njk",
+];
 
 export default function (eleventyConfig) {
-  let markdownLibrary;
+  for (const template of archivedTemplates) {
+    eleventyConfig.ignores.add(template);
+  }
 
-  eleventyConfig.configureErrorReporting({ allowMissingExtensions: true });
-  eleventyConfig.amendLibrary("md", (markdown) => {
-    markdown.set({ linkify: true });
-    const renderImage = markdown.renderer.rules.image;
-    markdown.renderer.rules.image = (tokens, index, options, environment, renderer) => {
-      tokens[index].attrSet("loading", "lazy");
-      tokens[index].attrSet("decoding", "async");
-
-      return renderImage(tokens, index, options, environment, renderer);
-    };
-    markdownLibrary = markdown;
-    return markdown;
+  eleventyConfig.ignores.add("src/content/**");
+  eleventyConfig.addPassthroughCopy({ "src/assets/retired.css": "assets/retired.css" });
+  eleventyConfig.addPassthroughCopy({ "src/assets/favicon.svg": "assets/favicon.svg" });
+  eleventyConfig.addPassthroughCopy({
+    "src/assets/fonts/poppins-latin-400-normal.woff2": "assets/fonts/poppins-latin-400-normal.woff2",
+    "src/assets/fonts/poppins-latin-600-normal.woff2": "assets/fonts/poppins-latin-600-normal.woff2",
+    "src/assets/fonts/poppins-latin-800-normal.woff2": "assets/fonts/poppins-latin-800-normal.woff2",
   });
-
-  eleventyConfig.addPairedShortcode("section", (content, type, title) => {
-    const heading = type === "hero" ? "h1" : "h2";
-    const headingHtml = markdownLibrary.renderInline(title);
-    const accessibleTitle = escapeHtml(stripHtml(headingHtml));
-    const bodyHtml = markdownLibrary.render(content.trim()).replace(
-      /<a href="([^"]+)">Read more<\/a>/gi,
-      `<a href="$1" aria-label="Read more about ${accessibleTitle}">Read more</a>`,
-    );
-
-    return `<section class="prose lg:prose-xl max-w-none py-8 prose-a:text-blue-600 prose-a:hover:text-blue-500">
-  <${heading}>${headingHtml}</${heading}>
-  ${bodyHtml}
-</section>`;
-  });
-
-  eleventyConfig.addPairedShortcode("cta", (content, buttonLink, buttonLabel) => {
-    const bodyHtml = markdownLibrary.render(content.trim());
-
-    return `<section class="prose lg:prose-xl max-w-none p-8 bg-blue-200 rounded-2xl">
-  ${bodyHtml}
-  <div><a href="${escapeHtml(buttonLink)}" class="rounded-md bg-blue-600 inline-block no-underline px-3 py-2 text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">${escapeHtml(buttonLabel)}</a></div>
-</section>`;
-  });
-
-  eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
-  eleventyConfig.addPassthroughCopy({ "src/favicon.ico": "favicon.ico" });
   eleventyConfig.addPassthroughCopy({ "src/_headers": "_headers" });
-
-  eleventyConfig.addWatchTarget("src/assets/");
-
-  eleventyConfig.addCollection("posts", (collectionApi) =>
-    collectionApi.getFilteredByGlob("src/content/posts/*.md").sort(byDateDescending),
-  );
-  eleventyConfig.addCollection("pages", (collectionApi) =>
-    collectionApi.getFilteredByGlob("src/content/pages/*.md"),
-  );
-
-  eleventyConfig.addFilter("readableDate", (value) => {
-    const date = new Date(value);
-    const parts = new Intl.DateTimeFormat("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      timeZone: "Australia/Brisbane",
-    }).formatToParts(date);
-    const part = (type) => parts.find((item) => item.type === type)?.value;
-    const day = Number(part("day"));
-
-    return `${part("month")} ${day}${ordinalSuffix(day)}, ${part("year")}`;
-  });
-  eleventyConfig.addFilter("rfc3339Date", (value) => new Date(value).toISOString());
-  eleventyConfig.addFilter("rfc822Date", (value) => new Date(value).toUTCString());
-  eleventyConfig.addFilter("oneYearFrom", (value) => {
-    const date = new Date(value);
-    date.setUTCFullYear(date.getUTCFullYear() + 1);
-    return date.toISOString();
-  });
-  eleventyConfig.addFilter("absoluteUrl", (url, baseUrl) => new URL(url, baseUrl).toString());
-  eleventyConfig.addFilter("startsWith", (value, prefix) => String(value).startsWith(prefix));
-  eleventyConfig.addFilter("metadataDescription", metadataDescription);
-  eleventyConfig.addFilter("breadcrumbItems", breadcrumbItems);
-  eleventyConfig.addFilter("jsonStringify", (value) => JSON.stringify(value, null, 2).replaceAll("<", "\\u003c"));
-  eleventyConfig.addFilter("xmlEscape", xmlEscape);
-  eleventyConfig.addGlobalData("environment", process.env.ELEVENTY_ENV ?? "production");
 
   return {
     dir: {
@@ -160,7 +32,6 @@ export default function (eleventyConfig) {
       output: "_site",
     },
     htmlTemplateEngine: "njk",
-    markdownTemplateEngine: "njk",
-    templateFormats: ["md", "njk"],
+    templateFormats: ["njk"],
   };
 }
