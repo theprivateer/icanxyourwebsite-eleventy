@@ -8,7 +8,13 @@ This repository contains the shared Eleventy implementation for three related st
 | `fix` | [icanfixyour.website](https://icanfixyour.website) |
 | `manage` | [icanmanageyour.website](https://icanmanageyour.website) |
 
-The sites share their layouts, build configuration, tests, routes, feeds, technical standards, and Cloudflare Pages support. Each deployment branch owns its identity, compiled stylesheet, pages, and blog posts.
+The sites share their Eleventy foundation and Cloudflare Pages support. Each deployment branch retains its own identity and archived content.
+
+## Dormant public state
+
+The `build`, `fix`, and `manage` branches intentionally publish a minimal retirement notice at `/`. Archived service pages and articles remain in source control but Eleventy excludes them from the generated site. The public build contains no service navigation, articles, enquiries, analytics, feed, sitemap, or other marketing material.
+
+Unknown and previously published URLs are handled by the generated `404.html`. Cloudflare Pages serves that document with a genuine `404 Not Found` response; no old URL is redirected to the holding page or to `philstephens.com`.
 
 ## Branch strategy
 
@@ -52,16 +58,7 @@ The contact email, True North Labs footer, copyright years, templates, content r
 
 ## Technical standards
 
-The shared implementation follows [The Website Specification](https://specification.website/) and includes:
-
-- page-specific descriptions, canonical URLs, Open Graph metadata, and schema.org JSON-LD
-- visible breadcrumbs, semantic landmarks, a keyboard skip link, and strong focus indicators
-- an accessible custom 404 page and a site-wide privacy notice
-- local Poppins web fonts, favicons, app icons, a web app manifest, and a social preview card
-- RSS self-identification and update metadata, an XML sitemap, `/llms.txt`, and `/.well-known/security.txt`
-- Cloudflare security, privacy, discovery, and cache-control headers
-
-The sites do not load analytics or advertising scripts, set cookies, or contact a third-party font service. The privacy notice records that behaviour and must be updated if it changes.
+The holding page is server-rendered HTML using the sites' locally hosted Poppins typeface and established white, zinc, and blue palette. It has no JavaScript, forms, analytics, cookies, third-party assets, or automatic redirect. It includes `noindex, follow`, a clear heading, a keyboard-visible call to action, responsive typography, a custom 404 page, and compact Cloudflare security and cache headers.
 
 ## Content
 
@@ -113,7 +110,7 @@ The generated site is written to `_site/`.
 npm test
 ```
 
-The tests verify migrated routes, cleaned frontmatter, post filenames and dates, blog ordering, site configuration, metadata, structured data, keyboard navigation, heading order, link names, image attributes, local assets, machine-readable discovery files, internal links, and Cloudflare headers.
+The tests verify the deliberately small public file set, site identity, holding-page wording, `noindex`, the `philstephens.com` link, accessibility basics, absence of old routes and marketing output, custom 404 handling, and Cloudflare headers.
 
 ## Cloudflare Pages
 
@@ -127,4 +124,4 @@ Use the same build settings for all three projects:
 | Build output directory | `_site` |
 | Node version | `22` |
 
-Set the production branch to `build`, `fix`, or `manage` for the appropriate project. The generated `_headers`, `robots.txt`, RSS feed, sitemap, `/llms.txt`, web app manifest, and security contact are included in the deployment output.
+Set the production branch to `build`, `fix`, or `manage` for the appropriate project. The generated output contains the holding page, custom 404 page, `robots.txt`, `_headers`, one stylesheet, one favicon, and three local Poppins font files.
