@@ -47,6 +47,15 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function decodeHtml(value) {
+  return String(value)
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'");
+}
+
 test("build creates every migrated route", async () => {
   const outputFiles = await filesBelow(outputDirectory);
   const htmlFiles = outputFiles.filter((file) => file.endsWith(".html"));
@@ -150,7 +159,8 @@ test("every HTML page has complete, page-specific metadata", async () => {
     assert.ok(titles[0][1].trim(), `${relativePath}: non-empty title`);
     assert.match(html, new RegExp(`<html lang="${site.language}">`), `${relativePath}: document language`);
     assert.ok(description?.[1], `${relativePath}: meta description`);
-    assert.ok(description[1].length <= 160, `${relativePath}: description length`);
+    const decodedDescription = decodeHtml(description[1]);
+    assert.ok(decodedDescription.length <= 160, `${relativePath}: description length`);
 
     if (relativePath === "404.html") {
       assert.match(html, /<meta name="robots" content="noindex">/);
@@ -159,9 +169,9 @@ test("every HTML page has complete, page-specific metadata", async () => {
       continue;
     }
 
-    const previousPage = descriptions.get(description[1]);
+    const previousPage = descriptions.get(decodedDescription);
     assert.equal(previousPage, undefined, `${relativePath}: description also used by ${previousPage}`);
-    descriptions.set(description[1], relativePath);
+    descriptions.set(decodedDescription, relativePath);
 
     assert.match(html, new RegExp(`<link rel="canonical" href="${site.url.replaceAll(".", "\\.")}\/`));
     for (const property of ["og:title", "og:description", "og:image", "og:url", "og:type"]) {
