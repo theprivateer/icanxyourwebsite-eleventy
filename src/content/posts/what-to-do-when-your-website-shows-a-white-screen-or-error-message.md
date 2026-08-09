@@ -24,15 +24,15 @@ Resist the urge to click around randomly, reinstall things, or start updating ev
 
 Instead, take a breath and do three simple things:
 
-#### 1. Take note of exactly what you see
+## 1. Take note of exactly what you see
 
 Is it completely blank? Is there a short message? A long block of text? A code? These details are useful clues.
 
-#### 2. Check whether the issue is consistent
+## 2. Check whether the issue is consistent
 
 Try another browser or device. Sometimes the problem is local, not global.
 
-#### 3. Look for recent changes
+## 3. Look for recent changes
 
 Did an update run? Did you receive an email from your host? Did anyone else make a change?
 

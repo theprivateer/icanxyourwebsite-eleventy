@@ -1,0 +1,24 @@
+---
+permalink: /llms.txt
+eleventyExcludeFromCollections: true
+---
+# {{ site.name }}
+
+> {{ site.description }}
+
+This is the official content index for {{ site.url }}.
+
+## Main pages
+
+{% for item in collections.pages %}- [{{ item.data.title }}]({{ item.url | absoluteUrl(site.url) }})
+{% endfor %}- [Blog]({{ '/blog/' | absoluteUrl(site.url) }}): Articles and advice about business websites.
+- [Privacy]({{ '/privacy/' | absoluteUrl(site.url) }}): How this website handles personal information.
+
+{% if collections.posts.length %}## Articles
+
+{% for post in collections.posts %}- [{{ post.data.title }}]({{ post.url | absoluteUrl(site.url) }}) — published {{ post.data.date | rfc3339Date }}
+{% endfor %}{% endif %}
+## Machine-readable resources
+
+- [RSS feed]({{ '/feed.xml' | absoluteUrl(site.url) }})
+- [XML sitemap]({{ '/sitemap.xml' | absoluteUrl(site.url) }})

@@ -8,7 +8,7 @@ WordPress is a powerful and flexible platform, which is why so many businesses u
 
 If your site ever suddenly looks wrong, shows an error, or stops performing a function, you're hardly alone. These issues tend to come from a few common causes, and once you understand them, they're much easier to prevent or fix.
 
-### 1. Updates that don't play nicely together
+## 1. Updates that don't play nicely together
 
 WordPress itself, its themes, and its plugins are all developed by different people and organisations. Each one releases updates on its own schedule. When everything updates in harmony, things run smoothly. But sometimes a plugin update doesn't "play nicely" with a theme update or with another plugin.
 
@@ -20,7 +20,7 @@ That can cause:
 
 The tricky part is that updates are necessary for security and performance. Ignoring them usually makes things worse over time. The key is managing them deliberately rather than letting everything update automatically without oversight.
 
-### 2. Outdated software
+## 2. Outdated software
 
 Not all hosting environments keep pace with the latest WordPress requirements. If your server is running older versions of PHP or other components, certain features may stop functioning properly.
 
@@ -32,7 +32,7 @@ Signs of outdated software might include:
 
 WordPress itself often recommends minimum versions for servers and software, and keeping your environment up to date is part of healthy maintenance.
 
-### 3. Plugin and theme conflicts
+## 3. Plugin and theme conflicts
 
 Plugins and themes extend WordPress, and most sites rely on several of them. Each one has its own code. When two or more pieces of code don't interact well, conflicts can happen.
 
@@ -45,7 +45,7 @@ These conflicts can show up as:
 
 Conflicts often happen after updates, but they can also appear when something was installed incorrectly in the first place. The fix is usually about identifying the conflicting components and resolving or replacing them.
 
-### 4. Broken or expired credentials
+## 4. Broken or expired credentials
 
 WordPress doesn't live in isolation. It connects to:
 
@@ -58,7 +58,7 @@ If login credentials change or expire - for example, when a hosting password is 
 
 Forms stop sending emails, content fails to load, dashboard parts stop updating - all because something simple in the background lost its access.
 
-### 5. Server and hosting issues
+## 5. Server and hosting issues
 
 Your website is only available because it's hosted on a server. If the hosting provider changes configuration, applies an update, or experiences outages, your site can behave unpredictably.
 
@@ -71,7 +71,7 @@ These issues might include:
 
 Good management means keeping an eye on hosting changes and knowing where configuration lives so things don't break without explanation.
 
-### 6. Security software and firewalls
+## 6. Security software and firewalls
 
 Security plugins and firewalls help protect your site from harmful traffic and attacks. Sometimes, they can be a bit too protective and block legitimate functionality.
 
@@ -83,7 +83,7 @@ A security rule update might:
 
 Security is important, but it needs to be configured and tested carefully. Overzealous settings can cause more problems than they solve if they're left unchecked.
 
-### 7. Human error
+## 7. Human error
 Sometimes the issue really is as simple as someone clicking the wrong button, deleting the wrong page, or pasting the wrong snippet of code. These things happen, especially when multiple people have access to a site.
 
 The good news is that these problems are usually the easiest to fix - as long as there's a recent backup to restore from or a clear way to trace the change.

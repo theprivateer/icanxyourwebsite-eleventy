@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#fff"/>
+  <rect x="92" y="92" width="446" height="446" rx="72" fill="#2563eb"/>
+  <path fill="#fff" d="M196 190h56v252h-56zm119 0h126v49h-70v56h63v49h-63v98h-56z"/>
+  <text x="598" y="263" fill="#27272a" font-family="Arial, sans-serif" font-size="62" font-weight="700">I CAN …</text>
+  <text x="598" y="343" fill="#27272a" font-family="Arial, sans-serif" font-size="62" font-weight="700">YOUR WEBSITE</text>
+  <text x="600" y="406" fill="#52525b" font-family="Arial, sans-serif" font-size="29">Dependable websites for small businesses</text>
+</svg>
