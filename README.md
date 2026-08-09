@@ -8,7 +8,7 @@ This repository contains the shared Eleventy implementation for three related st
 | `fix` | [icanfixyour.website](https://icanfixyour.website) |
 | `manage` | [icanmanageyour.website](https://icanmanageyour.website) |
 
-The sites share their layouts, build configuration, tests, routes, feeds, and Cloudflare Pages support. Each deployment branch owns its identity, compiled stylesheet, pages, and blog posts.
+The sites share their layouts, build configuration, tests, routes, feeds, technical standards, and Cloudflare Pages support. Each deployment branch owns its identity, compiled stylesheet, pages, and blog posts.
 
 ## Branch strategy
 
@@ -49,6 +49,19 @@ Branch-specific identity is defined in `src/_data/site.js`:
 - LinkedIn URL
 
 The contact email, True North Labs footer, copyright years, templates, content routes, RSS feed, sitemap, date formatting, and Cloudflare headers are shared.
+
+## Technical standards
+
+The shared implementation follows [The Website Specification](https://specification.website/) and includes:
+
+- page-specific descriptions, canonical URLs, Open Graph metadata, and schema.org JSON-LD
+- visible breadcrumbs, semantic landmarks, a keyboard skip link, and strong focus indicators
+- an accessible custom 404 page and a site-wide privacy notice
+- local Poppins web fonts, favicons, app icons, a web app manifest, and a social preview card
+- RSS self-identification and update metadata, an XML sitemap, `/llms.txt`, and `/.well-known/security.txt`
+- Cloudflare security, privacy, discovery, and cache-control headers
+
+The sites do not load analytics or advertising scripts, set cookies, or contact a third-party font service. The privacy notice records that behaviour and must be updated if it changes.
 
 ## Content
 
@@ -100,7 +113,7 @@ The generated site is written to `_site/`.
 npm test
 ```
 
-The tests verify migrated routes, cleaned frontmatter, post filenames and dates, blog ordering, site configuration, unresolved template syntax, internal links, and Cloudflare security headers.
+The tests verify migrated routes, cleaned frontmatter, post filenames and dates, blog ordering, site configuration, metadata, structured data, keyboard navigation, heading order, link names, image attributes, local assets, machine-readable discovery files, internal links, and Cloudflare headers.
 
 ## Cloudflare Pages
 
@@ -114,4 +127,4 @@ Use the same build settings for all three projects:
 | Build output directory | `_site` |
 | Node version | `22` |
 
-Set the production branch to `build`, `fix`, or `manage` for the appropriate project. The generated `_headers`, `robots.txt`, RSS feed, and sitemap are included in the deployment output.
+Set the production branch to `build`, `fix`, or `manage` for the appropriate project. The generated `_headers`, `robots.txt`, RSS feed, sitemap, `/llms.txt`, web app manifest, and security contact are included in the deployment output.
