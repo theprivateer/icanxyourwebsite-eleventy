@@ -1,0 +1,101 @@
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/poppins-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/assets/fonts/poppins-latin-600-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/assets/fonts/poppins-latin-800-normal.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: light;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  background: #fff;
+  color: #27272a;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 6vw, 5rem);
+  background: #fff;
+}
+
+.notice {
+  width: min(100%, 42rem);
+  border-top: 0.3rem solid #2563eb;
+  padding-block: clamp(2rem, 6vw, 4rem);
+}
+
+.site-name {
+  margin: 0 0 1.25rem;
+  color: #27272a;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h1 {
+  max-width: 15ch;
+  margin: 0;
+  color: #18181b;
+  font-size: clamp(2.25rem, 7vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.message {
+  max-width: 43rem;
+  margin: 1.75rem 0 0;
+  color: #27272a;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 2rem;
+  border-radius: 0.45rem;
+  background: #2563eb;
+  color: #fff;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.action:hover {
+  background: #3b82f6;
+}
+
+.action:focus-visible {
+  outline: 0.2rem solid #18181b;
+  outline-offset: 0.25rem;
+}

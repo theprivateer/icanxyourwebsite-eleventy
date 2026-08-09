@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="{{ site.language }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ site.name }} | {{ title }}</title>
+    <meta name="description" content="{{ message }}">
+    <meta name="robots" content="noindex, follow">
+    <meta name="theme-color" content="#f8fafc">
+    <meta name="color-scheme" content="light">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/assets/retired.css">
+  </head>
+  <body>
+    <main class="notice">
+      <p class="site-name">{{ site.headerLineOne }}<br>{{ site.headerLineTwo }}</p>
+      <h1>{{ heading }}</h1>
+      <p class="message">{{ message }}</p>
+      <a class="action" href="https://philstephens.com">Visit philstephens.com</a>
+    </main>
+  </body>
+</html>
